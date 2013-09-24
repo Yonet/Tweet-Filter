@@ -4,21 +4,21 @@ var fs = require('fs'),
 module.exports.filter =  filter = function (data) {
   var result = [];
   // var baseUrl = 'http://www.twitter.com/';
-  data = data.statuses;
-  // for (var i = 0; i < data.length; i++) {
-  //   console.log(data[i]['user']['location']);
-  // };
-
+  for (var i = 0; i < data.length; i++) {
+    console.log(data[i]['user']['location']);
+  };
+  //console.log(data);
   var len = data.length;
   console.log(len);
   for (var i = 0; i < len; i++) {
     // Flag to check if geo data is present and where
+    var str = data[i]['user']['location'];
     var geoFlag = false;
     if (data[i]['geo']) {
       geoFlag = 1;
-    } else if (data[i]['user']['location'].match(/^-?\d+\.\d+$/)) {
+    } else if (str && str.match(/^.+\:\s\-?\d+\.\d+$/)) {
       geoFlag = 2;
-    } else if (data[i].hasOwnProperty('retweeted_status') && data[i]['retweeted_status'].hasOwnProperty('user') && data[i]['retweeted_status']['user']['location'].match(/^-?\d+\.\d+$/)) {
+    } else if (data[i].hasOwnProperty('retweeted_status') && data[i]['retweeted_status'].hasOwnProperty('user') && data[i]['retweeted_status']['user']['location'].match(/^.+\:\s\-?\d+\.\d+$/)) {
       geoFlag = 3;
     }
     // If geo data is present
@@ -65,14 +65,18 @@ module.exports.filter =  filter = function (data) {
       result[n]['profileImage'] = data[i]['user']['profile_image_url'];
     }
   }
-  console.log(result);
+  result = JSON.stringify(result);
+  fs.appendFile('filtered_tweets.json', result, function(err) {
+    if (err) throw err;
+    console.log('data len ' + data.length);
+  });
   return result;
 };
 var tweets = fs.readFile('tweets.json', function (err, data) {
   if (err) throw err;
   console.log('load tweet');
   data = JSON.parse(data);
-  //console.log(data);
+  //console.log(typeof(data[0]['user']['location']));
   filter(data);
 
   return data;
