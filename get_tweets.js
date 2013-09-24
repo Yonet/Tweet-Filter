@@ -1,7 +1,7 @@
 var util = require('util'),
     twitter = require('twitter'),
-    fs = require('fs'),
-    filter = require('./filter_tweets.js');
+    fs = require('fs');
+    //filter = require('./filter_tweets.js');
 var twit = new twitter({
     consumer_key: 'fsq4YbjfXuQWJRs01XatGQ',
     consumer_secret: 'lzXoLOGzxGYeItJ327BGSLcNmZcmPft62x0tHuZYmac',
@@ -12,18 +12,22 @@ var twit = new twitter({
 twit.get('/statuses/show/27593302936.json', {include_entities:true}, function (data) {
     //console.log(util.inspect(data));
 });
-// twit.stream('statuses/sample', function(stream) {
-//     stream.on('data', function(data) {
-//         console.log(util.inspect(data));
-//     });
-// });
-twit.search('news OR #news', function (data) {
-  data = JSON.stringify(data);
-  fs.appendFile('tweets.json', data, function (err, data) {
-    if (err) throw err;
-    //console.log('data is ' + JSON.stringify(data));
-  });
+twit.stream('statuses/sample', function(stream) {
+    stream.on('data', function(data) {
+      data = JSON.stringify(data);
+      //console.log(util.inspect(data));
+      fs.appendFile('tweets.json', data, function (err, data) {
+        if (err) throw err;
+        console.log('data is streaming');
+      });
+    });
 });
-	// var filtered = filter.filter(data);
- //    fs.appendFile('filtered_tweets.json', util.inspect(data));
+// twit.search('news OR #news', function (data) {
+//   data = JSON.stringify(data);
+//   fs.appendFile('tweets.json', data, function (err, data) {
+//     if (err) throw err;
+//     //console.log('data is ' + JSON.stringify(data));
+//   });
+// });
+
     
